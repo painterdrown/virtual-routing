@@ -14,7 +14,7 @@
 
   + 运行程序
 
-    `virtual-routing <ip> <port>`
+    `$GOBIN/virtual-routing <ip> <port>`
 
     将 \<ip\> 替换成你想要设置的 ip 地址，可以是任意的 ip 地址，只是起到标识作用，与实际的 ip 无关；
     将 \<port\> 替换成你想要监听的端口号。

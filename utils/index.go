@@ -15,5 +15,5 @@ func CheckErr(err error) {
 
 // Prompt .
 func Prompt(msg string) {
-	fmt.Printf("\n%s\n[%s] > ", msg, global.Host)
+	fmt.Printf("\n%s\n[%s] > ", msg, global.Port)
 }

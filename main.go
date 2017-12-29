@@ -8,12 +8,12 @@ import (
 )
 
 func main() {
-	if len(os.Args) < 3 {
-		println("Usage: virtual-routing <ip> <port>")
-		return
+	if len(os.Args) < 2 {
+		println("Usage: $GOBIN/virtual-routing <port>")
+		os.Exit(1)
 	}
-	global.Host = os.Args[1]
-	global.Port = os.Args[2]
-	go utils.Listen(global.Port)
-	utils.RecieveCmd()
+	global.Port = os.Args[1]
+	go utils.Listen()
+	utils.Config()
+	go utils.BroadcastPeriodically()
 }
