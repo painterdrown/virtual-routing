@@ -16,12 +16,13 @@ func Listen() {
 	for {
 		conn, err := ln.Accept()
 		CheckErr(err)
-		go HandleConn(conn)
+		go HandleConn(&conn)
 	}
 }
 
 // HandleConn .
-func HandleConn(conn net.Conn) {
+func HandleConn(connAddr *net.Conn) {
+	conn := *connAddr
 	defer conn.Close()
 	var buffer [512]byte
 	for {
@@ -51,17 +52,17 @@ func HandleMsg(msg string) {
 		source, _ := strconv.Atoi(parts[2])
 
 		// 判断该广播信息是否已经被该主机广播过
-		global.Lock1 <- true
+		// global.Lock1 <- true
 		if global.Broadcasted[bid] {
 			return
 		}
 		global.Broadcasted[bid] = true
-		<-global.Lock1
+		// <-global.Lock1
 
 		// 更新 Cost
-		global.Lock2 <- true
+		// global.Lock2 <- true
 		UpdateCost(source, parts[3:])
-		<-global.Lock2
+		// <-global.Lock2
 
 		// 向其他路由器继续转发
 		Broadcast(msg, source)
@@ -79,7 +80,6 @@ func Communicate(port int, msg string) {
 	if err != nil {
 		panic(err)
 	}
-	msg += "......From " + strconv.Itoa(global.Port)
 	fmt.Fprintf(conn, msg)
 	conn.Close()
 }

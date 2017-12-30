@@ -32,3 +32,12 @@ func ShowPrev() {
 	}
 	fmt.Printf("\n")
 }
+
+// ShowNear .
+func ShowNear() {
+	fmt.Printf("[Near][%d]: ", Port)
+	for k := range Near {
+		fmt.Printf("%d ", k)
+	}
+	fmt.Printf("\n")
+}

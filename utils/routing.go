@@ -14,6 +14,9 @@ func UpdateCost(source int, costs []string) {
 		global.Cost[source] = make(map[int]int)
 	}
 	for _, v := range costs {
+		if source == 3002 {
+			println(v)
+		}
 		parts := strings.Split(v, " ")
 		dest, _ := strconv.Atoi(parts[0])
 		cost, _ := strconv.Atoi(parts[1])
@@ -29,7 +32,6 @@ func UpdateCost(source int, costs []string) {
 			global.Cost[dest][source] = cost
 		}
 	}
-	global.Updated = false
 }
 
 // UpdateRoutingTable .
@@ -82,10 +84,12 @@ func UpdateRoutingTablePeriodically() {
 	ticker := time.NewTicker(interval)
 	for _ = range ticker.C {
 		if global.Updated {
-			UpdateRoutingTable()
+			// UpdateRoutingTable()
 			global.Updated = false
+			global.ShowNear() // DEBUG
 			global.ShowDist() // DEBUG
 			global.ShowPrev() // DEBUG
+			global.ShowCost() // DEBUG
 		}
 	}
 }
