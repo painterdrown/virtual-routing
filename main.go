@@ -17,5 +17,6 @@ func main() {
 	go utils.Listen()
 	utils.Config()
 	go utils.BroadcastPeriodically()
+	go utils.UpdateRoutingTablePeriodically()
 	<-global.Exit
 }

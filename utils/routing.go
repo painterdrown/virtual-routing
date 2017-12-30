@@ -3,13 +3,13 @@ package utils
 import (
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/painterdrown/virtual-routing/global"
 )
 
 // UpdateCost .
-func UpdateCost(source int, costs []string) bool {
-	var updated = false
+func UpdateCost(source int, costs []string) {
 	if global.Cost[source] == nil {
 		global.Cost[source] = make(map[int]int)
 	}
@@ -24,12 +24,12 @@ func UpdateCost(source int, costs []string) bool {
 			global.Cost[dest] = make(map[int]int)
 		}
 		if global.Cost[source][dest] != cost {
-			updated = true
+			global.Updated = true
 			global.Cost[source][dest] = cost
 			global.Cost[dest][source] = cost
 		}
 	}
-	return updated
+	global.Updated = false
 }
 
 // UpdateRoutingTable .
@@ -72,6 +72,20 @@ func UpdateRoutingTable() {
 		// 判断是否到达所有主机
 		if len(reached) == numOfAll {
 			break
+		}
+	}
+}
+
+// UpdateRoutingTablePeriodically .
+func UpdateRoutingTablePeriodically() {
+	const interval = 60 * time.Second
+	ticker := time.NewTicker(interval)
+	for _ = range ticker.C {
+		if global.Updated {
+			UpdateRoutingTable()
+			global.Updated = false
+			global.ShowDist() // DEBUG
+			global.ShowPrev() // DEBUG
 		}
 	}
 }

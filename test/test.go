@@ -4,8 +4,8 @@ import (
 	"github.com/painterdrown/virtual-routing/global"
 )
 
-// TestData .
-func TestData() {
+// SetTestData .
+func SetTestData() {
 	global.Port = 1
 
 	global.Cost[1] = make(map[int]int)

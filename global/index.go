@@ -13,6 +13,9 @@ var Port int
 // Ready 为 true 表示该主机已经配置完毕
 var Ready = false
 
+// Updated 表示路由表是否需要更新
+var Updated = false
+
 // Cost 相当于二维数组，用来记录每条链路上面的花费
 var Cost = make(map[int]map[int]int)
 
@@ -33,6 +36,10 @@ var Broadcasted = make(map[int64]bool)
 
 // Exit .
 var Exit = make(chan bool)
+
+// Lock .
+var Lock1 = make(chan bool, 1)
+var Lock2 = make(chan bool, 1)
 
 func init() {
 	All[Port] = true

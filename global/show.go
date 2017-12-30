@@ -7,7 +7,7 @@ import (
 // ShowCost .
 func ShowCost() {
 	for k1, v1 := range Cost {
-		fmt.Printf("[%d]: ", k1)
+		fmt.Printf("[Cost][%d]: ", k1)
 		for k2, v2 := range v1 {
 			fmt.Printf("(%d,%d)", k2, v2)
 		}
@@ -17,8 +17,17 @@ func ShowCost() {
 
 // ShowDist .
 func ShowDist() {
-	fmt.Printf("[%d]: ", Port)
+	fmt.Printf("[Dist][%d]: ", Port)
 	for k, v := range Dist {
+		fmt.Printf("(%d,%d)", k, v)
+	}
+	fmt.Printf("\n")
+}
+
+// ShowPrev .
+func ShowPrev() {
+	fmt.Printf("[Prev][%d]: ", Port)
+	for k, v := range Prev {
 		fmt.Printf("(%d,%d)", k, v)
 	}
 	fmt.Printf("\n")

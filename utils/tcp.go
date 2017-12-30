@@ -5,7 +5,6 @@ import (
 	"net"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/painterdrown/virtual-routing/global"
 )
@@ -52,19 +51,20 @@ func HandleMsg(msg string) {
 		source, _ := strconv.Atoi(parts[2])
 
 		// 判断该广播信息是否已经被该主机广播过
+		global.Lock1 <- true
 		if global.Broadcasted[bid] {
 			return
 		}
 		global.Broadcasted[bid] = true
+		<-global.Lock1
 
 		// 更新 Cost
-		if UpdateCost(source, parts[3:]) && global.Ready {
-			// UpdateRoutingTable()
-			global.ShowCost() // DEBUG
-		}
+		global.Lock2 <- true
+		UpdateCost(source, parts[3:])
+		<-global.Lock2
 
 		// 向其他路由器继续转发
-		Broadcast(msg)
+		Broadcast(msg, source)
 	}
 
 	// 如果是路由信息
@@ -79,37 +79,7 @@ func Communicate(port int, msg string) {
 	if err != nil {
 		panic(err)
 	}
+	msg += "......From " + strconv.Itoa(global.Port)
 	fmt.Fprintf(conn, msg)
 	conn.Close()
-}
-
-// Broadcast .
-func Broadcast(msg string) {
-	for port := range global.Near {
-		if port != global.Port {
-			Communicate(port, msg)
-		}
-	}
-	Prompt("Broadcasting: " + msg)
-}
-
-// BroadcastPeriodically .
-func BroadcastPeriodically() {
-	const interval = 8 * time.Second
-	ticker := time.NewTicker(interval)
-	for _ = range ticker.C {
-		msg := GenerateBroadcastMsg()
-		Broadcast(msg)
-	}
-}
-
-// GenerateBroadcastMsg .
-func GenerateBroadcastMsg() string {
-	bid := time.Now().UnixNano()
-	global.Broadcasted[bid] = true
-	msg := "B|" + strconv.FormatInt(bid, 10) + "|" + strconv.Itoa(global.Port)
-	for port := range global.Near {
-		msg += "|" + strconv.Itoa(port) + " " + strconv.Itoa(global.Cost[global.Port][port])
-	}
-	return msg
 }
