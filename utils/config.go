@@ -3,46 +3,54 @@ package utils
 import (
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/painterdrown/virtual-routing/global"
 )
 
 // Config .
 func Config() {
+	args := make([]string, 3)
 	for {
-		var cmd string
-		fmt.Printf("[%s] > ", global.Port)
-		fmt.Scanf("%s", &cmd)
-		if !HandleCmd(cmd) {
+		fmt.Printf("[%d] > ", global.Port)
+		fmt.Scanf("%s %s %s", &args[0], &args[1], &args[2])
+		if !HandleCmd(args) {
 			break
 		}
+		args[0] = ""
+		args[1] = ""
+		args[2] = ""
 	}
 }
 
 // HandleCmd .
-func HandleCmd(cmd string) bool {
-	if len(cmd) == 0 {
+func HandleCmd(args []string) bool {
+	// DEBUG
+	println(args[0], args[1], args[2])
+
+	if args[0] == "" {
 		return true
 	}
-	parts := strings.Split(cmd, " ")
 
 	// 配置主机名称
-	if parts[0] == "name" {
-		global.Name = parts[1]
+	if args[0] == "name" {
+		global.Name = args[1]
 	}
 
 	// 配置与主机相连的拓扑以及花费
-	if parts[0] == "connect" {
-		port := parts[1]
-		cost, _ := strconv.Atoi(parts[2])
+	if args[0] == "connect" {
+		port, _ := strconv.Atoi(args[1])
+		cost, _ := strconv.Atoi(args[2])
+		if global.Cost[global.Port] == nil {
+			global.Cost[global.Port] = make(map[int]int)
+		}
 		global.Cost[global.Port][port] = cost
 		return true
 	}
 
 	// 完成配置
-	if parts[0] == "ok" {
+	if args[0] == "ok" {
 		global.Ready = true
+		ShowCost()
 		UpdateRoutingTable()
 		return false
 	}

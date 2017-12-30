@@ -12,7 +12,7 @@ import (
 
 // Listen .
 func Listen() {
-	ln, err := net.Listen("tcp", ":"+global.Port)
+	ln, err := net.Listen("tcp", ":"+strconv.Itoa(global.Port))
 	CheckErr(err)
 	for {
 		conn, err := ln.Accept()
@@ -48,7 +48,7 @@ func HandleMsg(msg string) {
 
 	// 如果是广播信息
 	if parts[0] == "B" {
-		source := parts[1]
+		source, _ := strconv.Atoi(parts[1])
 
 		// 更新 Cost
 		if UpdateCost(source, parts[2:]) && global.Ready {
@@ -56,9 +56,9 @@ func HandleMsg(msg string) {
 		}
 
 		// 向其他路由器继续转发
-		for i, port := range global.DC {
+		for port := range global.DC {
 			// 防止形成循环
-			if port == source || !global.DCUp[i] {
+			if port == source || !global.All[port] {
 				continue
 			}
 			Communicate(port, msg)
@@ -72,8 +72,8 @@ func HandleMsg(msg string) {
 }
 
 // Communicate .
-func Communicate(port string, msg string) {
-	conn, err := net.Dial("tcp", "0.0.0.0:"+port)
+func Communicate(port int, msg string) {
+	conn, err := net.Dial("tcp", "0.0.0.0:"+strconv.Itoa(port))
 	if err != nil {
 		panic(err)
 	}
@@ -83,19 +83,19 @@ func Communicate(port string, msg string) {
 
 // Broadcast .
 func Broadcast() {
-	msg := "B|" + global.Port
-	for i, port := range global.DC {
-		conn, err := net.Dial("tcp", "0.0.0.0:"+port)
+	msg := "B|" + strconv.Itoa(global.Port)
+	for port := range global.DC {
+		conn, err := net.Dial("tcp", "0.0.0.0:"+strconv.Itoa(port))
 		if err != nil {
-			global.DCUp[i] = false
+			global.All[port] = false
 			global.Cost[global.Port][port] = global.INFINITE
 		} else {
-			msg += "|" + port + " " + strconv.Itoa(global.Cost[global.Port][port])
+			msg += "|" + strconv.Itoa(port) + " " + strconv.Itoa(global.Cost[global.Port][port])
 		}
 		conn.Close()
 	}
-	for i, port := range global.DC {
-		if global.DCUp[i] {
+	for port := range global.DC {
+		if global.All[port] {
 			Communicate(port, msg)
 		}
 	}
