@@ -34,7 +34,7 @@ func HandleConn(conn net.Conn) {
 			panic(err)
 		}
 		msg := string(buffer[0:n])
-		Prompt(msg)
+		Prompt("Recieving: " + msg)
 		HandleMsg(msg)
 	}
 }
@@ -48,21 +48,23 @@ func HandleMsg(msg string) {
 
 	// 如果是广播信息
 	if parts[0] == "B" {
-		source, _ := strconv.Atoi(parts[1])
+		bid, _ := strconv.ParseInt(parts[1], 10, 64)
+		source, _ := strconv.Atoi(parts[2])
+
+		// 判断该广播信息是否已经被该主机广播过
+		if global.Broadcasted[bid] {
+			return
+		}
+		global.Broadcasted[bid] = true
 
 		// 更新 Cost
-		if UpdateCost(source, parts[2:]) && global.Ready {
-			UpdateRoutingTable()
+		if UpdateCost(source, parts[3:]) && global.Ready {
+			// UpdateRoutingTable()
+			global.ShowCost() // DEBUG
 		}
 
 		// 向其他路由器继续转发
-		for port := range global.DC {
-			// 防止形成循环
-			if port == source || !global.All[port] {
-				continue
-			}
-			Communicate(port, msg)
-		}
+		Broadcast(msg)
 	}
 
 	// 如果是路由信息
@@ -82,30 +84,32 @@ func Communicate(port int, msg string) {
 }
 
 // Broadcast .
-func Broadcast() {
-	msg := "B|" + strconv.Itoa(global.Port)
-	for port := range global.DC {
-		conn, err := net.Dial("tcp", "0.0.0.0:"+strconv.Itoa(port))
-		if err != nil {
-			global.All[port] = false
-			global.Cost[global.Port][port] = global.INFINITE
-		} else {
-			msg += "|" + strconv.Itoa(port) + " " + strconv.Itoa(global.Cost[global.Port][port])
-		}
-		conn.Close()
-	}
-	for port := range global.DC {
-		if global.All[port] {
+func Broadcast(msg string) {
+	for port := range global.Near {
+		if port != global.Port {
 			Communicate(port, msg)
 		}
 	}
+	Prompt("Broadcasting: " + msg)
 }
 
 // BroadcastPeriodically .
 func BroadcastPeriodically() {
-	const interval = 30 * time.Second
+	const interval = 8 * time.Second
 	ticker := time.NewTicker(interval)
 	for _ = range ticker.C {
-		Broadcast()
+		msg := GenerateBroadcastMsg()
+		Broadcast(msg)
 	}
+}
+
+// GenerateBroadcastMsg .
+func GenerateBroadcastMsg() string {
+	bid := time.Now().UnixNano()
+	global.Broadcasted[bid] = true
+	msg := "B|" + strconv.FormatInt(bid, 10) + "|" + strconv.Itoa(global.Port)
+	for port := range global.Near {
+		msg += "|" + strconv.Itoa(port) + " " + strconv.Itoa(global.Cost[global.Port][port])
+	}
+	return msg
 }

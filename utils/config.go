@@ -24,9 +24,6 @@ func Config() {
 
 // HandleCmd .
 func HandleCmd(args []string) bool {
-	// DEBUG
-	println(args[0], args[1], args[2])
-
 	if args[0] == "" {
 		return true
 	}
@@ -43,15 +40,19 @@ func HandleCmd(args []string) bool {
 		if global.Cost[global.Port] == nil {
 			global.Cost[global.Port] = make(map[int]int)
 		}
+		if global.Cost[port] == nil {
+			global.Cost[port] = make(map[int]int)
+		}
+		global.All[port] = true
+		global.Near[port] = true
 		global.Cost[global.Port][port] = cost
+		global.Cost[port][global.Port] = cost
 		return true
 	}
 
 	// 完成配置
 	if args[0] == "ok" {
 		global.Ready = true
-		ShowCost()
-		UpdateRoutingTable()
 		return false
 	}
 
