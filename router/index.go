@@ -40,7 +40,7 @@ func Init() {
 	if testPort(p) {
 		port = p
 	} else {
-		panic("监听端口 %d 出错，或者该端口已被占用。请选择其他端口！")
+		panic("监听端口 " + strconv.Itoa(p) + " 出错，或者该端口已被占用。请选择其他端口！")
 	}
 	name = os.Args[2]
 }

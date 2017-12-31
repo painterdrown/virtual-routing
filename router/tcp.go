@@ -32,7 +32,7 @@ func handleConn(connAddr *net.Conn) {
 		panic(err)
 	}
 	msg := string(buffer[0:n])
-	util.Prompt("接收: " + msg)
+	util.Log("接收: %s", msg)
 	handleMsg(msg)
 }
 
@@ -56,18 +56,23 @@ func handleMsg(msg string) {
 		broadcasted[bid] = true
 		lock1.Unlock()
 
-		// 向其他路由器继续转发
-		broadcast(msg, source)
-
 		// 更新 Cost
 		lock2.Lock()
 		updateCost(source, parts[3:])
 		lock2.Unlock()
+
+		// 向其他路由器继续转发
+		broadcast(msg, source)
 	}
 
 	// 如果是路由信息
 	if parts[0] == "R" {
-
+		dest, _ := strconv.Atoi(parts[2])
+		if dest == port {
+			util.Log("接收: %s", msg)
+		} else {
+			forward(dest, msg)
+		}
 	}
 }
 
@@ -87,4 +92,16 @@ func testPort(p int) bool {
 	}
 	ln.Close()
 	return true
+}
+
+func forward(dest int, msg string) {
+	var before int
+	for {
+		before = prev[dest]
+		if before == port {
+			send(dest, msg)
+		} else {
+			dest = before
+		}
+	}
 }

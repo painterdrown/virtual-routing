@@ -8,11 +8,11 @@ import (
 
 // UpdateRoutingTablePeriodically 开始周期性地更新路由表。
 func UpdateRoutingTablePeriodically() {
-	const interval = 10 * time.Second
+	const interval = 60 * time.Second
 	ticker := time.NewTicker(interval)
 	for _ = range ticker.C {
-		if updated {
-			// UpdateRoutingTable()
+		if ready && updated {
+			updateRoutingTable()
 			updated = false
 			ShowNear() // DEBUG
 			ShowDist() // DEBUG
@@ -23,6 +23,7 @@ func UpdateRoutingTablePeriodically() {
 }
 
 func updateCost(source int, costs []string) {
+	all[source] = true
 	if cost[source] == nil {
 		cost[source] = make(map[int]int)
 	}
@@ -30,6 +31,7 @@ func updateCost(source int, costs []string) {
 		parts := strings.Split(v, " ")
 		dest, _ := strconv.Atoi(parts[0])
 		c, _ := strconv.Atoi(parts[1])
+		all[dest] = true
 		if dest == port {
 			near[source] = true
 		}

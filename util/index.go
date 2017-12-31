@@ -3,9 +3,8 @@ package util
 import (
 	"fmt"
 	"math/rand"
+	"os"
 	"time"
-
-	"github.com/painterdrown/virtual-routing/global"
 )
 
 // CheckErr .
@@ -23,19 +22,19 @@ func WaitShortly() {
 
 // Prompt .
 func Prompt(format string, a ...interface{}) {
-	fmt.Printf(format+"\n", a...)
+	fmt.Printf(format+"\n> ", a...)
 }
 
 // HandleErr .
 func HandleErr() {
 	if e := recover(); e != nil {
 		if msg, ok := e.(string); ok {
-			Prompt(msg)
+			Log(msg)
 		} else if err, ok := e.(error); ok {
-			Prompt(err.Error())
+			Log(err.Error())
 		} else {
-			Prompt("不知道为什么我就崩溃了...")
+			Log("不知道为什么我就崩溃了...")
 		}
-		global.Exit <- 1
+		os.Exit(1)
 	}
 }

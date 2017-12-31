@@ -9,11 +9,13 @@ import (
 
 // BroadcastPeriodically .
 func BroadcastPeriodically() {
-	const interval = 5 * time.Second
+	const interval = 30 * time.Second
 	ticker := time.NewTicker(interval)
 	for _ = range ticker.C {
-		msg := generateBroadcastMsg()
-		broadcast(msg, -1)
+		if ready {
+			msg := generateBroadcastMsg()
+			broadcast(msg, -1)
+		}
 	}
 }
 
@@ -23,7 +25,7 @@ func broadcast(msg string, except int) {
 			send(p, msg)
 		}
 	}
-	util.Prompt("广播: " + msg)
+	util.Log("广播: " + msg)
 }
 
 func generateBroadcastMsg() string {
