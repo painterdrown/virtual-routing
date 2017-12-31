@@ -9,7 +9,7 @@ import (
 	"github.com/painterdrown/virtual-routing/util"
 )
 
-// Listen 开始进行监听。
+// Listen 开始监听端口。
 func Listen() {
 	ln, err := net.Listen("tcp", ":"+strconv.Itoa(port))
 	util.CheckErr(err)
@@ -19,8 +19,6 @@ func Listen() {
 		go handleConn(&conn)
 	}
 }
-
-// ======================
 
 func handleConn(connAddr *net.Conn) {
 	conn := *connAddr
@@ -34,7 +32,7 @@ func handleConn(connAddr *net.Conn) {
 		panic(err)
 	}
 	msg := string(buffer[0:n])
-	util.Prompt("Recieving: " + msg)
+	util.Prompt("接收: " + msg)
 	handleMsg(msg)
 }
 
@@ -80,4 +78,13 @@ func send(port int, msg string) {
 	}
 	fmt.Fprintf(conn, msg)
 	conn.Close()
+}
+
+func testPort(p int) bool {
+	ln, err := net.Listen("tcp", ":"+strconv.Itoa(p))
+	if err != nil {
+		return false
+	}
+	ln.Close()
+	return true
 }

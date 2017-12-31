@@ -8,8 +8,7 @@ import (
 )
 
 // Config 进行虚拟路由的配置。
-func Config(p int) {
-	port = p
+func Config() {
 	args := make([]string, 3)
 	for {
 		fmt.Printf("[%d] > ", port)
@@ -24,16 +23,21 @@ func Config(p int) {
 }
 
 func handleCmd(args []string) bool {
-	if args[0] == "" {
+	if len(args) == 0 {
 		return true
 	}
 
-	// 配置主机名称
+	// 配置端口
+	if args[0] == "port" {
+
+	}
+
+	// 配置名称
 	if args[0] == "name" {
 		name = args[1]
 	}
 
-	// 配置与主机相连的拓扑以及花费
+	// 配置拓扑以及花费
 	if args[0] == "connect" {
 		p, _ := strconv.Atoi(args[1])
 		c, _ := strconv.Atoi(args[2])
@@ -47,13 +51,16 @@ func handleCmd(args []string) bool {
 		near[p] = true
 		cost[port][p] = c
 		cost[p][port] = c
-		return true
 	}
 
 	// 完成配置
 	if args[0] == "ok" {
+		if port == -1 {
+			util.Prompt("必须配置端口：port <port>")
+			return true
+		}
 		ready = true
-		util.Prompt("配置完成，正在监听%d端口...", port)
+		util.Prompt("配置完成，正在监听 %d 端口...", port)
 		return false
 	}
 

@@ -21,10 +21,9 @@ func broadcast(msg string, except int) {
 	for p := range near {
 		if p != port && p != except {
 			send(p, msg)
-			// util.WaitShortly()
 		}
 	}
-	util.Prompt("Broadcasting: " + msg)
+	util.Prompt("广播: " + msg)
 }
 
 func generateBroadcastMsg() string {

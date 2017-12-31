@@ -2,20 +2,17 @@ package main
 
 import (
 	"os"
-	"strconv"
 
 	"github.com/painterdrown/virtual-routing/global"
 	"github.com/painterdrown/virtual-routing/router"
+	"github.com/painterdrown/virtual-routing/util"
 )
 
 func main() {
-	if len(os.Args) < 2 {
-		println("Usage: $GOBIN/virtual-routing <port>")
-		global.Exit <- 1
-	}
-	port, _ := strconv.Atoi(os.Args[1])
+	defer util.HandleErr()
+	router.Init()
 	go router.Listen()
-	router.Config(port)
+	router.Config()
 	go router.BroadcastPeriodically()
 	go router.UpdateRoutingTablePeriodically()
 	os.Exit(<-global.Exit)
