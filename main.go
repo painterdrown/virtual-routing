@@ -5,18 +5,18 @@ import (
 	"strconv"
 
 	"github.com/painterdrown/virtual-routing/global"
-	"github.com/painterdrown/virtual-routing/utils"
+	"github.com/painterdrown/virtual-routing/router"
 )
 
 func main() {
 	if len(os.Args) < 2 {
 		println("Usage: $GOBIN/virtual-routing <port>")
-		os.Exit(1)
+		global.Exit <- 1
 	}
-	global.Port, _ = strconv.Atoi(os.Args[1])
-	go utils.Listen()
-	utils.Config()
-	go utils.BroadcastPeriodically()
-	go utils.UpdateRoutingTablePeriodically()
-	<-global.Exit
+	port, _ := strconv.Atoi(os.Args[1])
+	go router.Listen()
+	router.Config(port)
+	go router.BroadcastPeriodically()
+	go router.UpdateRoutingTablePeriodically()
+	os.Exit(<-global.Exit)
 }

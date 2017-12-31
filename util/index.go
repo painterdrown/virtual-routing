@@ -1,4 +1,4 @@
-package utils
+package util
 
 import (
 	"fmt"
@@ -13,13 +13,13 @@ func CheckErr(err error) {
 	}
 }
 
-// Prompt .
-func Prompt(msg string) {
-	fmt.Printf("%s\n", msg)
-}
-
 // WaitShortly .
 func WaitShortly() {
 	n := rand.Int63n(1000)
 	time.Sleep(time.Duration(n) * time.Millisecond)
+}
+
+// Prompt .
+func Prompt(format string, a ...interface{}) {
+	fmt.Printf(format+"\n", a...)
 }
