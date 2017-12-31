@@ -2,8 +2,10 @@ package router
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 
+	"github.com/painterdrown/virtual-routing/global"
 	"github.com/painterdrown/virtual-routing/util"
 )
 
@@ -12,12 +14,10 @@ func RunCmd() {
 	args := make([]string, 4)
 	for {
 		fmt.Printf("> ")
-		waitingForCmd = true
+		global.WatingForCmd = true
 		fmt.Scanf("%s %s %s", &args[0], &args[1], &args[2], &args[3])
-		waitingForCmd = false
-		if !handleCmd(args) {
-			break
-		}
+		global.WatingForCmd = false
+		handleCmd(args)
 		args[0] = ""
 		args[1] = ""
 		args[2] = ""
@@ -25,17 +25,12 @@ func RunCmd() {
 	}
 }
 
-func handleCmd(args []string) bool {
+func handleCmd(args []string) {
 	if len(args) == 0 {
-		return true
+		return
 	}
-
-	// 完成配置
-	if args[0] == "ok" {
-
-	}
-
-	switch args[0] {
+	op := args[0]
+	switch op {
 	case "name":
 		name = args[1]
 		break
@@ -56,7 +51,15 @@ func handleCmd(args []string) bool {
 	case "ok":
 		ready = true
 		util.Prompt("配置完成，正在监听 %d 端口...", port)
+		break
+	case "shutdown":
+		did := getTimestamp()
+		msg := "D|" + strconv.FormatInt(did, 10) + "|" + strconv.Itoa(port)
+		broadcast(msg)
+		os.Exit(0)
+	case "info":
+		ShowInfo()
+		break
+	default:
 	}
-
-	return true
 }

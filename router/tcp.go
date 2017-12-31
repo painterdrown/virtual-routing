@@ -41,38 +41,59 @@ func handleMsg(msg string) {
 		return
 	}
 	parts := strings.Split(msg, "|")
+	op := parts[0]
 
-	// 如果是广播信息
-	if parts[0] == "B" {
-		bid, _ := strconv.ParseInt(parts[1], 10, 64)
-		source, _ := strconv.Atoi(parts[2])
-
+	switch op {
+	case "B":
 		// 判断该广播信息是否已经被该主机广播过
+		bid, _ := strconv.ParseInt(parts[1], 10, 64)
 		lock1.Lock()
 		if broadcasted[bid] {
 			lock1.Unlock()
-			return
+			break
 		}
 		broadcasted[bid] = true
 		lock1.Unlock()
-
+		source, _ := strconv.Atoi(parts[2])
 		// 更新 Cost
 		lock2.Lock()
 		updateCost(source, parts[3:])
 		lock2.Unlock()
-
 		// 向其他路由器继续转发
-		broadcast(msg, source)
-	}
+		broadcast(msg)
+		break
 
-	// 如果是路由信息
-	if parts[0] == "R" {
+	case "R":
 		dest, _ := strconv.Atoi(parts[2])
 		if dest == port {
 			util.Log("接收: %s", msg)
 		} else {
 			forward(dest, msg)
 		}
+		break
+
+	case "D":
+		// 判断该广播信息是否已经被该主机广播过
+		did, _ := strconv.ParseInt(parts[1], 10, 64)
+		lock1.Lock()
+		if broadcasted[did] {
+			lock1.Unlock()
+			break
+		}
+		broadcasted[did] = true
+		lock1.Unlock()
+		downport, _ := strconv.Atoi(parts[2])
+		all[downport] = false
+		if near[downport] {
+			near[downport] = false
+		}
+		prev[downport] = -1
+		cost[port][downport] = bigenough
+		dist[downport] = bigenough
+		updated = true
+		// 向其他路由器继续转发
+		broadcast(msg)
+		break
 	}
 }
 
@@ -100,6 +121,9 @@ func forward(dest int, msg string) {
 		before = prev[dest]
 		if before == port {
 			send(dest, msg)
+		} else if before == -1 {
+			util.Log("转发（找不到下一跳路由器）: %s", msg)
+			break
 		} else {
 			dest = before
 		}

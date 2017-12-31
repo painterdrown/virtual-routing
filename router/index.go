@@ -43,42 +43,64 @@ func Init() {
 		panic("监听端口 " + strconv.Itoa(p) + " 出错，或者该端口已被占用。请选择其他端口！")
 	}
 	name = os.Args[2]
+	util.InitLogger(name, port)
 }
 
 // ShowCost .
 func ShowCost() {
+	fmt.Printf("=========== cost ===========")
 	for k1, v1 := range cost {
-		fmt.Printf("[cost][%d]: ", k1)
+		fmt.Printf("[%d]: ", k1)
 		for k2, v2 := range v1 {
 			fmt.Printf("(%d,%d)", k2, v2)
 		}
 		fmt.Printf("\n")
 	}
+	if len(cost) == 0 {
+		fmt.Printf("(null)\n")
+	}
 }
 
 // ShowDist .
 func ShowDist() {
-	fmt.Printf("[dist][%d]: ", port)
+	fmt.Printf("=========== dist ===========")
 	for k, v := range dist {
 		fmt.Printf("(%d,%d)", k, v)
+	}
+	if len(dist) == 0 {
+		fmt.Printf("(null)")
 	}
 	fmt.Printf("\n")
 }
 
 // ShowPrev .
 func ShowPrev() {
-	fmt.Printf("[prev][%d]: ", port)
+	fmt.Printf("=========== prev ===========")
 	for k, v := range prev {
 		fmt.Printf("(%d,%d)", k, v)
+	}
+	if len(prev) == 0 {
+		fmt.Printf("(null)")
 	}
 	fmt.Printf("\n")
 }
 
 // ShowNear .
 func ShowNear() {
-	fmt.Printf("[near][%d]: ", port)
+	fmt.Printf("=========== near ===========")
 	for k := range near {
 		fmt.Printf("%d ", k)
 	}
+	if len(near) == 0 {
+		fmt.Printf("(null)")
+	}
 	fmt.Printf("\n")
+}
+
+// ShowInfo .
+func ShowInfo() {
+	ShowNear()
+	ShowDist()
+	ShowPrev()
+	ShowCost()
 }

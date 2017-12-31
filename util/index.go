@@ -5,6 +5,8 @@ import (
 	"math/rand"
 	"os"
 	"time"
+
+	"github.com/painterdrown/virtual-routing/global"
 )
 
 // CheckErr .
@@ -22,7 +24,10 @@ func WaitShortly() {
 
 // Prompt .
 func Prompt(format string, a ...interface{}) {
-	fmt.Printf(format+"\n> ", a...)
+	fmt.Printf(format+"\n", a...)
+	if global.WatingForCmd {
+		fmt.Printf("> ")
+	}
 }
 
 // HandleErr .

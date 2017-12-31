@@ -3,16 +3,23 @@ package util
 import (
 	"log"
 	"os"
+	"strconv"
 )
 
 var logger *log.Logger
+
+// InitLogger .
+func InitLogger(name string, port int) {
+	logFile, err := os.Create("logs/" + strconv.Itoa(port) + ".log")
+	CheckErr(err)
+	logger = log.New(logFile, "["+name+"]", log.LstdFlags)
+}
 
 // Log .
 func Log(format string, a ...interface{}) {
 	if logger == nil {
 		logFile, err := os.Create("info.log")
 		CheckErr(err)
-		defer logFile.Close()
 		logger = log.New(logFile, "[test]", log.LstdFlags)
 	}
 	logger.Printf(format+"\n", a...)

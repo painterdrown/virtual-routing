@@ -7,29 +7,33 @@ import (
 	"github.com/painterdrown/virtual-routing/util"
 )
 
-// BroadcastPeriodically .
+// BroadcastPeriodically 周期性地广播自己的路由信息。
 func BroadcastPeriodically() {
 	const interval = 30 * time.Second
 	ticker := time.NewTicker(interval)
 	for _ = range ticker.C {
 		if ready {
 			msg := generateBroadcastMsg()
-			broadcast(msg, -1)
+			broadcast(msg)
 		}
 	}
 }
 
-func broadcast(msg string, except int) {
+func broadcast(msg string) {
 	for p := range near {
-		if p != port && p != except {
+		if p != port {
 			send(p, msg)
 		}
 	}
 	util.Log("广播: " + msg)
 }
 
+func getTimestamp() int64 {
+	return time.Now().UnixNano()
+}
+
 func generateBroadcastMsg() string {
-	bid := time.Now().UnixNano()
+	bid := getTimestamp()
 	broadcasted[bid] = true
 	msg := "B|" + strconv.FormatInt(bid, 10) + "|" + strconv.Itoa(port)
 	for p := range near {

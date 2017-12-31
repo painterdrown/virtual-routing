@@ -14,10 +14,6 @@ func UpdateRoutingTablePeriodically() {
 		if ready && updated {
 			updateRoutingTable()
 			updated = false
-			ShowNear() // DEBUG
-			ShowDist() // DEBUG
-			ShowPrev() // DEBUG
-			ShowCost() // DEBUG
 		}
 	}
 }
