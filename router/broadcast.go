@@ -9,7 +9,7 @@ import (
 
 // BroadcastPeriodically .
 func BroadcastPeriodically() {
-	const interval = 30 * time.Second
+	const interval = 5 * time.Second
 	ticker := time.NewTicker(interval)
 	for _ = range ticker.C {
 		msg := generateBroadcastMsg()
@@ -21,7 +21,7 @@ func broadcast(msg string, except int) {
 	for p := range near {
 		if p != port && p != except {
 			send(p, msg)
-			util.WaitShortly()
+			// util.WaitShortly()
 		}
 	}
 	util.Prompt("Broadcasting: " + msg)

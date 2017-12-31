@@ -50,16 +50,21 @@ func handleMsg(msg string) {
 		source, _ := strconv.Atoi(parts[2])
 
 		// 判断该广播信息是否已经被该主机广播过
+		lock1.Lock()
 		if broadcasted[bid] {
+			lock1.Unlock()
 			return
 		}
 		broadcasted[bid] = true
+		lock1.Unlock()
 
 		// 向其他路由器继续转发
 		broadcast(msg, source)
 
 		// 更新 Cost
+		lock2.Lock()
 		updateCost(source, parts[3:])
+		lock2.Unlock()
 	}
 
 	// 如果是路由信息
