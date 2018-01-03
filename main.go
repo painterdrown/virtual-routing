@@ -12,4 +12,6 @@ func main() {
 	go router.BroadcastPeriodically()
 	go router.UpdateRoutingTablePeriodically()
 	router.RunCmd()
+
+	// router.Test()
 }

@@ -60,6 +60,9 @@ func handleCmd(args []string) {
 	case "info":
 		ShowInfo()
 		break
+	case "test":
+		updateRoutingTable()
+		break
 	default:
 	}
 }

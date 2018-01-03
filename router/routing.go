@@ -44,40 +44,37 @@ func updateCost(source int, costs []string) {
 
 func updateRoutingTable() {
 	// 初始化
-	var reached = make(map[int]bool)
-	if dist == nil {
-		dist = make(map[int]int)
-	}
 	for u := range all {
 		if near[u] {
 			dist[u] = cost[port][u]
+			prev[u] = port
 		} else {
 			dist[u] = bigenough
 		}
 	}
 	dist[port] = 0
 	prev[port] = port
+	var reached = make(map[int]bool)
 	reached[port] = true
 
 	numOfAll := len(all)
 	for {
 		min := bigenough
-		var m, n int // n 是最近的主机, m 是到达 n 的上一台主机
-		for u := range reached {
-			var base = dist[u]
-			for v := range all {
-				if !reached[v] && base+cost[u][v] < min {
-					min = base + cost[u][v]
-					n = v
-					m = u
-				}
+		var w int // n 是最近的主机, m 是到达 n 的上一台主机
+		for u := range dist {
+			if !reached[u] && dist[u] < min {
+				min = dist[u]
+				w = u
 			}
 		}
-		// 找到 m, n
-		reached[n] = true
-		dist[n] = min
-		prev[n] = m
-
+		// w 就是找到的最小开销的路由器
+		reached[w] = true
+		for v := range cost[w] {
+			if !reached[v] && dist[w]+cost[w][v] < dist[v] {
+				dist[v] = dist[w] + cost[w][v]
+				prev[v] = w
+			}
+		}
 		// 判断是否到达所有主机
 		if len(reached) == numOfAll {
 			break

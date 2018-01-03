@@ -1,7 +1,6 @@
 package router
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 	"sync"
@@ -26,9 +25,7 @@ var prev = make(map[int]int)
 var cost = make(map[int]map[int]int)   // cost 相当于二维数组，用来记录每条链路上面的花费
 var broadcasted = make(map[int64]bool) // Broadcasted 储存已经转发的广播信息 ID
 
-func init() {
-	all[port] = true
-}
+func init() {}
 
 // Init 初始化路由的基本信息。
 func Init() {
@@ -44,63 +41,4 @@ func Init() {
 	}
 	name = os.Args[2]
 	util.InitLogger(name, port)
-}
-
-// ShowCost .
-func ShowCost() {
-	fmt.Printf("=========== cost ===========")
-	for k1, v1 := range cost {
-		fmt.Printf("[%d]: ", k1)
-		for k2, v2 := range v1 {
-			fmt.Printf("(%d,%d)", k2, v2)
-		}
-		fmt.Printf("\n")
-	}
-	if len(cost) == 0 {
-		fmt.Printf("(null)\n")
-	}
-}
-
-// ShowDist .
-func ShowDist() {
-	fmt.Printf("=========== dist ===========")
-	for k, v := range dist {
-		fmt.Printf("(%d,%d)", k, v)
-	}
-	if len(dist) == 0 {
-		fmt.Printf("(null)")
-	}
-	fmt.Printf("\n")
-}
-
-// ShowPrev .
-func ShowPrev() {
-	fmt.Printf("=========== prev ===========")
-	for k, v := range prev {
-		fmt.Printf("(%d,%d)", k, v)
-	}
-	if len(prev) == 0 {
-		fmt.Printf("(null)")
-	}
-	fmt.Printf("\n")
-}
-
-// ShowNear .
-func ShowNear() {
-	fmt.Printf("=========== near ===========")
-	for k := range near {
-		fmt.Printf("%d ", k)
-	}
-	if len(near) == 0 {
-		fmt.Printf("(null)")
-	}
-	fmt.Printf("\n")
-}
-
-// ShowInfo .
-func ShowInfo() {
-	ShowNear()
-	ShowDist()
-	ShowPrev()
-	ShowCost()
 }
