@@ -1,4 +1,4 @@
-package router
+package router2
 
 import (
 	"os"
@@ -10,8 +10,10 @@ import (
 
 const bigenough = 9999
 
-var name string     // name 是该主机的名字
+var mode = 1 // 1 是 LS 自治, 2 是 LS 中控, 3 是 DV
+var controller = -1
 var port = -1       // port 用来标识不同的主机
+var name string     // name 是该主机的名字
 var ready = false   // ready 为 true 表示该主机已经配置完毕
 var updated = false // updated 表示路由表是否需要更新
 

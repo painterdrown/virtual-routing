@@ -1,4 +1,4 @@
-package router
+package router1
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 )
 
 // Listen 开始监听端口。
-func Listen() {
+func listen() {
 	ln, err := net.Listen("tcp", ":"+strconv.Itoa(port))
 	util.CheckErr(err)
 	for {
@@ -53,15 +53,14 @@ func handleMsg(msg string) {
 		}
 		broadcasted[bid] = true
 		lock1.Unlock()
-		source, _ := strconv.Atoi(parts[2])
+		u, _ := strconv.Atoi(parts[2])
 		// 更新 Cost
 		lock2.Lock()
-		updateCost(source, parts[3:])
+		updateCost(u, parts[3:])
 		lock2.Unlock()
 		// 向其他路由器继续转发
 		broadcast(msg)
 		break
-
 	case "R":
 		dest, _ := strconv.Atoi(parts[2])
 		if dest != port {
@@ -91,29 +90,18 @@ func handleMsg(msg string) {
 		// 向其他路由器继续转发
 		broadcast(msg)
 		break
+	default:
+		break
 	}
-}
-
-func connect(p, c int) {
-	if cost[port] == nil {
-		cost[port] = make(map[int]int)
-	}
-	if cost[p] == nil {
-		cost[p] = make(map[int]int)
-	}
-	all[p] = true
-	near[p] = true
-	cost[port][p] = c
-	cost[p][port] = c
 }
 
 func send(p int, msg string) {
 	conn, err := net.Dial("tcp", "0.0.0.0:"+strconv.Itoa(p))
+	defer conn.Close()
 	if err != nil {
-		panic(err)
+		return
 	}
 	fmt.Fprintf(conn, msg)
-	conn.Close()
 	util.Log("发送: %d %s", p, msg)
 }
 
@@ -124,20 +112,4 @@ func testPort(p int) bool {
 	}
 	ln.Close()
 	return true
-}
-
-func forward(dest int, msg string) {
-	var before int
-	for {
-		before = prev[dest]
-		if before == port {
-			send(dest, msg)
-			break
-		} else if before == -1 {
-			util.Log("错误: 找不到下一跳路由器", msg)
-			break
-		} else {
-			dest = before
-		}
-	}
 }

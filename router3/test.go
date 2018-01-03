@@ -1,4 +1,4 @@
-package router
+package router2
 
 // Test .
 func Test() {

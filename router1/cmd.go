@@ -1,4 +1,4 @@
-package router
+package router1
 
 import (
 	"fmt"
@@ -11,17 +11,16 @@ import (
 
 // RunCmd 接收用户的命令。
 func RunCmd() {
-	args := make([]string, 4)
+	args := make([]string, 3)
 	for {
 		fmt.Printf("> ")
 		global.WatingForCmd = true
-		fmt.Scanf("%s %s %s", &args[0], &args[1], &args[2], &args[3])
+		fmt.Scanf("%s %s %s", &args[0], &args[1], &args[2])
 		global.WatingForCmd = false
 		handleCmd(args)
 		args[0] = ""
 		args[1] = ""
 		args[2] = ""
-		args[3] = ""
 	}
 }
 
@@ -31,8 +30,13 @@ func handleCmd(args []string) {
 	}
 	op := args[0]
 	switch op {
-	case "name":
-		name = args[1]
+	case "port":
+		p, _ := strconv.Atoi(args[1])
+		if testPort(p) {
+			port = p
+		} else {
+			util.Prompt("错误: 该端口已被占用, 请选择其他端口")
+		}
 		break
 	case "connect":
 		p, _ := strconv.Atoi(args[1])
@@ -40,12 +44,22 @@ func handleCmd(args []string) {
 		connect(p, c)
 		break
 	case "ok":
+		// 已经 ok 过一次
+		if ready {
+			break
+		}
+		if port == -1 {
+			util.Prompt("错误: 未配置端口")
+			break
+		}
 		ready = true
+		go listen()
+		go broadcastPeriodically()
+		go updateRoutingTablePeriodically()
 		util.Prompt("配置完成，正在监听 %d 端口...", port)
 		break
-
 	case "info":
-		ShowInfo()
+		showInfo()
 		break
 	case "send":
 		p, _ := strconv.Atoi(args[1])

@@ -1,4 +1,4 @@
-package router
+package router1
 
 import (
 	"strconv"
@@ -7,8 +7,7 @@ import (
 	"github.com/painterdrown/virtual-routing/util"
 )
 
-// BroadcastPeriodically 周期性地广播自己的路由信息。
-func BroadcastPeriodically() {
+func broadcastPeriodically() {
 	const interval = 5 * time.Second
 	ticker := time.NewTicker(interval)
 	for _ = range ticker.C {

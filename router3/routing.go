@@ -1,4 +1,4 @@
-package router
+package router2
 
 import (
 	"strconv"
@@ -6,38 +6,13 @@ import (
 	"time"
 )
 
-// UpdateRoutingTablePeriodically 开始周期性地更新路由表。
-func UpdateRoutingTablePeriodically() {
+func updateRoutingTablePeriodically() {
 	const interval = 10 * time.Second
 	ticker := time.NewTicker(interval)
 	for _ = range ticker.C {
 		if ready && updated {
 			updateRoutingTable()
 			updated = false
-		}
-	}
-}
-
-func updateCost(source int, costs []string) {
-	all[source] = true
-	if cost[source] == nil {
-		cost[source] = make(map[int]int)
-	}
-	for _, v := range costs {
-		parts := strings.Split(v, " ")
-		dest, _ := strconv.Atoi(parts[0])
-		c, _ := strconv.Atoi(parts[1])
-		all[dest] = true
-		if dest == port {
-			near[source] = true
-		}
-		if cost[dest] == nil {
-			cost[dest] = make(map[int]int)
-		}
-		if cost[source][dest] != c {
-			updated = true
-			cost[source][dest] = c
-			cost[dest][source] = c
 		}
 	}
 }
@@ -78,6 +53,30 @@ func updateRoutingTable() {
 		// 判断是否到达所有主机
 		if len(reached) == numOfAll {
 			break
+		}
+	}
+}
+
+func updateCost(source int, costs []string) {
+	all[source] = true
+	if cost[source] == nil {
+		cost[source] = make(map[int]int)
+	}
+	for _, v := range costs {
+		parts := strings.Split(v, " ")
+		dest, _ := strconv.Atoi(parts[0])
+		c, _ := strconv.Atoi(parts[1])
+		all[dest] = true
+		if dest == port {
+			near[source] = true
+		}
+		if cost[dest] == nil {
+			cost[dest] = make(map[int]int)
+		}
+		if cost[source][dest] != c {
+			updated = true
+			cost[source][dest] = c
+			cost[dest][source] = c
 		}
 	}
 }
