@@ -42,7 +42,6 @@ func handleMsg(msg string) {
 	}
 	parts := strings.Split(msg, "|")
 	op := parts[0]
-
 	switch op {
 	case "B":
 		// 判断该广播信息是否已经被该主机广播过
@@ -65,13 +64,10 @@ func handleMsg(msg string) {
 
 	case "R":
 		dest, _ := strconv.Atoi(parts[2])
-		if dest == port {
-			util.Log("接收: %s", msg)
-		} else {
+		if dest != port {
 			forward(dest, msg)
 		}
 		break
-
 	case "D":
 		// 判断该广播信息是否已经被该主机广播过
 		did, _ := strconv.ParseInt(parts[1], 10, 64)
@@ -83,13 +79,14 @@ func handleMsg(msg string) {
 		broadcasted[did] = true
 		lock1.Unlock()
 		downport, _ := strconv.Atoi(parts[2])
-		all[downport] = false
-		if near[downport] {
-			near[downport] = false
+		delete(all, downport)
+		delete(near, downport)
+		delete(prev, downport)
+		delete(dist, downport)
+		delete(cost, downport)
+		for _, u := range cost {
+			delete(u, downport)
 		}
-		prev[downport] = -1
-		cost[port][downport] = bigenough
-		dist[downport] = bigenough
 		updated = true
 		// 向其他路由器继续转发
 		broadcast(msg)
@@ -97,13 +94,27 @@ func handleMsg(msg string) {
 	}
 }
 
-func send(port int, msg string) {
-	conn, err := net.Dial("tcp", "0.0.0.0:"+strconv.Itoa(port))
+func connect(p, c int) {
+	if cost[port] == nil {
+		cost[port] = make(map[int]int)
+	}
+	if cost[p] == nil {
+		cost[p] = make(map[int]int)
+	}
+	all[p] = true
+	near[p] = true
+	cost[port][p] = c
+	cost[p][port] = c
+}
+
+func send(p int, msg string) {
+	conn, err := net.Dial("tcp", "0.0.0.0:"+strconv.Itoa(p))
 	if err != nil {
 		panic(err)
 	}
 	fmt.Fprintf(conn, msg)
 	conn.Close()
+	util.Log("发送: %d %s", p, msg)
 }
 
 func testPort(p int) bool {
@@ -121,8 +132,9 @@ func forward(dest int, msg string) {
 		before = prev[dest]
 		if before == port {
 			send(dest, msg)
+			break
 		} else if before == -1 {
-			util.Log("转发（找不到下一跳路由器）: %s", msg)
+			util.Log("错误: 找不到下一跳路由器", msg)
 			break
 		} else {
 			dest = before

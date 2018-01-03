@@ -37,32 +37,30 @@ func handleCmd(args []string) {
 	case "connect":
 		p, _ := strconv.Atoi(args[1])
 		c, _ := strconv.Atoi(args[2])
-		if cost[port] == nil {
-			cost[port] = make(map[int]int)
-		}
-		if cost[p] == nil {
-			cost[p] = make(map[int]int)
-		}
-		all[p] = true
-		near[p] = true
-		cost[port][p] = c
-		cost[p][port] = c
+		connect(p, c)
 		break
 	case "ok":
 		ready = true
 		util.Prompt("配置完成，正在监听 %d 端口...", port)
 		break
-	case "shutdown":
+
+	case "info":
+		ShowInfo()
+		break
+	case "send":
+		p, _ := strconv.Atoi(args[1])
+		if p == port {
+			util.Prompt("错误: 发送的目标不能是自己")
+			break
+		}
+		msg := "R|" + strconv.Itoa(port) + "|" + args[1] + "|" + args[2]
+		forward(p, msg)
+		break
+	case "exit":
 		did := getTimestamp()
 		msg := "D|" + strconv.FormatInt(did, 10) + "|" + strconv.Itoa(port)
 		broadcast(msg)
 		os.Exit(0)
-	case "info":
-		ShowInfo()
-		break
-	case "test":
-		updateRoutingTable()
-		break
 	default:
 	}
 }

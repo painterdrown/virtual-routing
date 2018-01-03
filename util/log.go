@@ -18,9 +18,9 @@ func InitLogger(name string, port int) {
 // Log .
 func Log(format string, a ...interface{}) {
 	if logger == nil {
-		logFile, err := os.Create("info.log")
+		logFile, err := os.Create("logs/error.log")
 		CheckErr(err)
-		logger = log.New(logFile, "[test]", log.LstdFlags)
+		logger = log.New(logFile, "[ERROR]", log.LstdFlags)
 	}
 	logger.Printf(format+"\n", a...)
 }

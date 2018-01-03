@@ -38,7 +38,7 @@ func HandleErr() {
 		} else if err, ok := e.(error); ok {
 			Log(err.Error())
 		} else {
-			Log("不知道为什么我就崩溃了...")
+			Log("不知道为什么就崩溃了...")
 		}
 		os.Exit(1)
 	}

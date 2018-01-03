@@ -9,7 +9,7 @@ import (
 
 // BroadcastPeriodically 周期性地广播自己的路由信息。
 func BroadcastPeriodically() {
-	const interval = 30 * time.Second
+	const interval = 5 * time.Second
 	ticker := time.NewTicker(interval)
 	for _ = range ticker.C {
 		if ready {

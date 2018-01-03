@@ -8,7 +8,7 @@ import (
 
 // UpdateRoutingTablePeriodically 开始周期性地更新路由表。
 func UpdateRoutingTablePeriodically() {
-	const interval = 60 * time.Second
+	const interval = 10 * time.Second
 	ticker := time.NewTicker(interval)
 	for _ = range ticker.C {
 		if ready && updated {
