@@ -4,17 +4,15 @@ import (
 	"fmt"
 )
 
-func showCost() {
-	fmt.Printf("=========== cost ===========\n")
-	for k1, v1 := range cost {
-		fmt.Printf("[%d]: ", k1)
-		for k2, v2 := range v1 {
-			fmt.Printf("(%d,%d)", k2, v2)
-		}
-		fmt.Printf("\n")
+func showDist() {
+	fmt.Printf("=========== dist ===========\n")
+	for k1, v1 := range dist {
+		fmt.Printf("(%d,%d) ", k1, v1)
 	}
-	if len(cost) == 0 {
+	if len(dist) == 0 {
 		fmt.Printf("(null)\n")
+	} else {
+		fmt.Printf("\n")
 	}
 }
 
@@ -40,8 +38,21 @@ func showAll() {
 	fmt.Printf("\n")
 }
 
+func showNext() {
+	fmt.Printf("=========== next ===========\n")
+	for k1, v1 := range next {
+		fmt.Printf("(%d,%d) ", k1, v1)
+	}
+	if len(next) == 0 {
+		fmt.Printf("(null)\n")
+	} else {
+		fmt.Printf("\n")
+	}
+}
+
 func showInfo() {
 	showAll()
 	showNear()
-	showCost()
+	showDist()
+	showNext()
 }

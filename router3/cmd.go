@@ -39,6 +39,8 @@ func handleCmd(args []string) {
 			port = p
 			all[port] = true
 			cost[port] = 0
+			dist[port] = 0
+			next[port] = port
 			util.InitLogger(port, 3)
 			go listen()
 		} else {
@@ -86,7 +88,7 @@ func handleCmd(args []string) {
 		send(n, msg)
 		break
 	case "exit":
-		msg := "D|" + strconv.Itoa(port)
+		msg := "D"
 		tellNeighbors(msg)
 		os.Exit(0)
 	default:

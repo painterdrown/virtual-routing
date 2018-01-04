@@ -27,7 +27,10 @@ func Prompt(format string, a ...interface{}) {
 	if global.WatingForCmd {
 		fmt.Printf("\n")
 	}
-	fmt.Printf(format+"\n> ", a...)
+	fmt.Printf(format+"\n", a...)
+	if global.WatingForCmd {
+		fmt.Printf("> ")
+	}
 }
 
 // HandleErr .

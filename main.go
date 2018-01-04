@@ -6,6 +6,7 @@ import (
 
 	"github.com/painterdrown/virtual-routing/router1"
 	"github.com/painterdrown/virtual-routing/router2"
+	"github.com/painterdrown/virtual-routing/router3"
 	"github.com/painterdrown/virtual-routing/util"
 )
 
@@ -23,6 +24,7 @@ func main() {
 		router2.RunCmd()
 		break
 	case 3:
+		router3.RunCmd()
 		break
 	default:
 		panic("错误: 参数 mode 的值只能是 1/2/3")

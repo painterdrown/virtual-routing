@@ -60,26 +60,7 @@ func handleMsg(msg string) {
 		}
 		break
 	case "D":
-		p, _ := strconv.Atoi(parts[1])
-		lock2.Lock()
-		if !all[p] {
-			lock2.Unlock()
-			break
-		}
-		lock2.Unlock()
-		delete(all, p)
-		delete(near, p)
-		delete(cost, p)
-		delete(next, p)
-		for u := range all {
-			if near[u] {
-				dist[u] = cost[u]
-			} else {
-				dist[u] = bigenough
-			}
-		}
 		tellNeighbors(msg)
-		shareDist()
 		break
 	default:
 		break

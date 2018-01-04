@@ -9,8 +9,22 @@ func updateRoutingTable() {
 }
 
 func updateCost(source int, costs []string) {
-	all[source] = true
-	near[source] = true
+	if !near[source] {
+		all[source] = true
+		near[source] = true
+		for _, v := range costs {
+			parts := strings.Split(v, " ")
+			dest, _ := strconv.Atoi(parts[0])
+			c, _ := strconv.Atoi(parts[1])
+			if dest == port {
+				cost[source] = c
+				dist[source] = c
+				next[source] = source
+				updated = true
+				break
+			}
+		}
+	}
 	for _, v := range costs {
 		parts := strings.Split(v, " ")
 		dest, _ := strconv.Atoi(parts[0])
@@ -35,7 +49,7 @@ func shareDist() {
 		return
 	}
 	msg := "S|" + strconv.Itoa(port)
-	for k, v := range cost {
+	for k, v := range dist {
 		msg += "|" + strconv.Itoa(k) + " " + strconv.Itoa(v)
 	}
 	tellNeighbors(msg)
@@ -43,6 +57,6 @@ func shareDist() {
 
 func tellNeighbors(msg string) {
 	for nb := range near {
-		send(nb, near)
+		send(nb, msg)
 	}
 }
