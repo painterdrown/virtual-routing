@@ -9,10 +9,10 @@ import (
 var logger *log.Logger
 
 // InitLogger .
-func InitLogger(name string, port int) {
-	logFile, err := os.Create("logs/" + strconv.Itoa(port) + ".log")
+func InitLogger(p int) {
+	logFile, err := os.Create("logs/" + strconv.Itoa(p) + ".log")
 	CheckErr(err)
-	logger = log.New(logFile, "["+name+"]", log.LstdFlags)
+	logger = log.New(logFile, "["+strconv.Itoa(p)+"]", log.LstdFlags)
 }
 
 // Log .

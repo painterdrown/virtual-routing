@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/painterdrown/virtual-routing/router1"
+	"github.com/painterdrown/virtual-routing/router2"
 	"github.com/painterdrown/virtual-routing/util"
 )
 
@@ -19,6 +20,7 @@ func main() {
 		router1.RunCmd()
 		break
 	case 2:
+		router2.RunCmd()
 		break
 	case 3:
 		break

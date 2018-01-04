@@ -32,8 +32,13 @@ func handleCmd(args []string) {
 	switch op {
 	case "port":
 		p, _ := strconv.Atoi(args[1])
+		if port != -1 {
+			util.Prompt("错误: 不能重复配置端口")
+		}
 		if testPort(p) {
 			port = p
+			util.InitLogger(port)
+			go listen()
 		} else {
 			util.Prompt("错误: 该端口已被占用, 请选择其他端口")
 		}
@@ -44,7 +49,6 @@ func handleCmd(args []string) {
 		connect(p, c)
 		break
 	case "ok":
-		// 已经 ok 过一次
 		if ready {
 			break
 		}
@@ -53,7 +57,6 @@ func handleCmd(args []string) {
 			break
 		}
 		ready = true
-		go listen()
 		go broadcastPeriodically()
 		go updateRoutingTablePeriodically()
 		util.Prompt("配置完成，正在监听 %d 端口...", port)
@@ -76,5 +79,7 @@ func handleCmd(args []string) {
 		broadcast(msg)
 		os.Exit(0)
 	default:
+		util.Prompt("错误: 无效的命令")
+		break
 	}
 }

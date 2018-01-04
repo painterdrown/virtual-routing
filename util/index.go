@@ -34,11 +34,16 @@ func Prompt(format string, a ...interface{}) {
 func HandleErr() {
 	if e := recover(); e != nil {
 		if msg, ok := e.(string); ok {
+			Prompt(msg)
 			Log(msg)
 		} else if err, ok := e.(error); ok {
-			Log(err.Error())
+			msg = err.Error()
+			Prompt(msg)
+			Log(msg)
 		} else {
-			Log("不知道为什么就崩溃了...")
+			msg = "不知道为什么就崩溃了..."
+			Prompt(msg)
+			Log(msg)
 		}
 		os.Exit(1)
 	}
