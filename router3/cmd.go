@@ -1,4 +1,4 @@
-package router2
+package router3
 
 import (
 	"fmt"
@@ -30,61 +30,67 @@ func handleCmd(args []string) {
 	}
 	op := args[0]
 	switch op {
-	case "controller":
+	case "port":
 		p, _ := strconv.Atoi(args[1])
-		controller = p
+		if port != -1 {
+			util.Prompt("错误: 不能重复配置端口")
+		}
+		if testListen(p) {
+			port = p
+			all[port] = true
+			cost[port] = 0
+			util.InitLogger(port, 3)
+			go listen()
+		} else {
+			util.Prompt("错误: 该端口已被占用, 请选择其他端口")
+		}
 		break
 	case "connect":
 		p, _ := strconv.Atoi(args[1])
 		c, _ := strconv.Atoi(args[2])
-		if mode == 1 {
-			connect(p, c)
-		} else if mode == 2 {
-			connect2(p, c)
-		} else {
-
-		}
+		connect(p, c)
 		break
 	case "ok":
-		// 已经 ok 过一次
 		if ready {
 			break
 		}
-		ready = true
-		if mode == 1 {
-			go broadcastPeriodically()
-			go updateRoutingTablePeriodically()
-		} else if mode == 2 {
-			if controller == -1 {
-				util.Prompt("错误: 未指定 controller")
+		allNbIsReady := true
+		for n := range near {
+			if !testConnection(n) {
+				util.Prompt("错误: 邻居 %d 未配置端口")
+				allNbIsReady = false
 			}
-			if controller == port {
-				go updateRoutingTablePeriodically()
-			} else {
-				reportNeighbors()
-			}
-		} else {
-
 		}
+		if !allNbIsReady {
+			break
+		}
+		ready = true
+		shareDist()
 		util.Prompt("配置完成，正在监听 %d 端口...", port)
 		break
 	case "info":
-		ShowInfo()
+		showInfo()
 		break
 	case "send":
 		p, _ := strconv.Atoi(args[1])
 		if p == port {
-			util.Prompt("错误: 发送的目标不能是自己")
+			util.Prompt("错误: 发送目标不能是自己")
 			break
 		}
-		msg := "R|" + strconv.Itoa(port) + "|" + args[1] + "|" + args[2]
-		forward(p, msg)
+		if !all[p] {
+			util.Prompt("错误: 发送目标不存在于当前网络中")
+			break
+		}
+		msg := "R|" + strconv.Itoa(port) + "|" + strconv.Itoa(p) + "|" + args[2]
+		n := next[p]
+		send(n, msg)
 		break
 	case "exit":
-		did := getTimestamp()
-		msg := "D|" + strconv.FormatInt(did, 10) + "|" + strconv.Itoa(port)
-		broadcast(msg)
+		msg := "D|" + strconv.Itoa(port)
+		tellNeighbors(msg)
 		os.Exit(0)
 	default:
+		util.Prompt("错误: 无效的命令")
+		break
 	}
 }

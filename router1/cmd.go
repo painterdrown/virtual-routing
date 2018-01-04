@@ -35,9 +35,12 @@ func handleCmd(args []string) {
 		if port != -1 {
 			util.Prompt("错误: 不能重复配置端口")
 		}
-		if testPort(p) {
+		if testListen(p) {
 			port = p
-			util.InitLogger(port)
+			all[port] = true
+			cost[port] = make(map[int]int)
+			cost[port][port] = 0
+			util.InitLogger(port, 1)
 			go listen()
 		} else {
 			util.Prompt("错误: 该端口已被占用, 请选择其他端口")
@@ -67,15 +70,18 @@ func handleCmd(args []string) {
 	case "send":
 		p, _ := strconv.Atoi(args[1])
 		if p == port {
-			util.Prompt("错误: 发送的目标不能是自己")
+			util.Prompt("错误: 发送目标不能是自己")
+			break
+		}
+		if !all[p] {
+			util.Prompt("错误: 发送目标不存在于当前网络中")
 			break
 		}
 		msg := "R|" + strconv.Itoa(port) + "|" + args[1] + "|" + args[2]
 		forward(p, msg)
 		break
 	case "exit":
-		did := getTimestamp()
-		msg := "D|" + strconv.FormatInt(did, 10) + "|" + strconv.Itoa(port)
+		msg := "D|" + strconv.Itoa(port)
 		broadcast(msg)
 		os.Exit(0)
 	default:

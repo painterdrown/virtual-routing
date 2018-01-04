@@ -12,9 +12,6 @@ func answer(u, v int) int {
 		if prev[u][v] == u {
 			res = v
 			break
-		} else if prev[u][v] == -1 {
-			res = -1
-			break
 		} else {
 			v = prev[u][v]
 		}

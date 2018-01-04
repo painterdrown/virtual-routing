@@ -4,8 +4,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/painterdrown/virtual-routing/util"
 )
 
 func updateRoutingTablePeriodically() {
@@ -100,9 +98,6 @@ func forward(dest int, msg string) {
 	for {
 		if prev[dest] == port {
 			send(dest, msg)
-			break
-		} else if prev[dest] == -1 {
-			util.Log("错误: 找不到下一跳路由器", msg)
 			break
 		} else {
 			dest = prev[dest]

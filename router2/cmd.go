@@ -39,9 +39,9 @@ func handleCmd(args []string) {
 		if port != -1 {
 			util.Prompt("错误: 不能重复配置端口")
 		}
-		if testPort(p) {
+		if testListen(p) {
 			port = p
-			util.InitLogger(port)
+			util.InitLogger(port, 2)
 			go listen()
 		} else {
 			util.Prompt("错误: 该端口已被占用, 请选择其他端口")
@@ -78,7 +78,11 @@ func handleCmd(args []string) {
 			break
 		}
 		if p == port {
-			util.Prompt("错误: 发送的目标不能是自己")
+			util.Prompt("错误: 发送目标不能是自己")
+			break
+		}
+		if !all[p] {
+			util.Prompt("错误: 发送目标不存在于当前网络中")
 			break
 		}
 		qry := "Q|" + strconv.Itoa(port) + "|" + strconv.Itoa(p)

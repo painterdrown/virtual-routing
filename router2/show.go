@@ -72,6 +72,7 @@ func showAll() {
 }
 
 func showInfo() {
+	showAll()
 	showDist()
 	showPrev()
 	showCost()

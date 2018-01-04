@@ -1,4 +1,4 @@
-package router2
+package router3
 
 import (
 	"fmt"
@@ -9,8 +9,7 @@ import (
 	"github.com/painterdrown/virtual-routing/util"
 )
 
-// Listen 开始监听端口。
-func Listen() {
+func listen() {
 	ln, err := net.Listen("tcp", ":"+strconv.Itoa(port))
 	util.CheckErr(err)
 	for {
@@ -43,58 +42,47 @@ func handleMsg(msg string) {
 	parts := strings.Split(msg, "|")
 	op := parts[0]
 	switch op {
-	case "B":
-		// 判断该广播信息是否已经被该主机广播过
-		bid, _ := strconv.ParseInt(parts[1], 10, 64)
-		lock1.Lock()
-		if broadcasted[bid] {
-			lock1.Unlock()
-			break
-		}
-		broadcasted[bid] = true
-		lock1.Unlock()
-		u, _ := strconv.Atoi(parts[2])
-		// 更新 Cost
-		lock2.Lock()
-		updateCost1(u, parts[3:])
-		lock2.Unlock()
-		// 向其他路由器继续转发
-		broadcast(msg)
-		break
 	case "R":
 		dest, _ := strconv.Atoi(parts[2])
 		if dest != port {
-			forward(dest, msg)
+			n := next[dest]
+			send(n, msg)
+		}
+		break
+	case "S":
+		source, _ := strconv.Atoi(parts[1])
+		lock1.Lock()
+		updateCost(source, parts[2:])
+		lock1.Unlock()
+		if updated {
+			shareDist()
+			updated = false
 		}
 		break
 	case "D":
-		// 判断该广播信息是否已经被该主机广播过
-		did, _ := strconv.ParseInt(parts[1], 10, 64)
-		lock1.Lock()
-		if broadcasted[did] {
-			lock1.Unlock()
+		p, _ := strconv.Atoi(parts[1])
+		lock2.Lock()
+		if !all[p] {
+			lock2.Unlock()
 			break
 		}
-		broadcasted[did] = true
-		lock1.Unlock()
-		downport, _ := strconv.Atoi(parts[2])
-		delete(all, downport)
-		delete(near, downport)
-		delete(prev, downport)
-		delete(dist, downport)
-		delete(cost, downport)
-		for _, u := range cost {
-			delete(u, downport)
-		}
-		updated = true
-		// 向其他路由器继续转发
-		broadcast(msg)
-		break
-	case "N":
-		u, _ := strconv.Atoi(parts[1])
-		lock2.Lock()
-		updateCost(u, parts[2:])
 		lock2.Unlock()
+		delete(all, p)
+		delete(near, p)
+		delete(cost, p)
+		delete(next, p)
+		for u := range all {
+			if near[u] {
+				dist[u] = cost[u]
+			} else {
+				dist[u] = bigenough
+			}
+		}
+		tellNeighbors(msg)
+		shareDist()
+		break
+	default:
+		break
 	}
 }
 
@@ -108,40 +96,20 @@ func send(p int, msg string) {
 	util.Log("发送: %d %s", p, msg)
 }
 
-func forward(dest int, msg string) {
-	var before int
-	for {
-		before = prev[dest]
-		if before == port {
-			send(dest, msg)
-			break
-		} else if before == -1 {
-			util.Log("错误: 找不到下一跳路由器", msg)
-			break
-		} else {
-			dest = before
-		}
-	}
-}
-
-func connect(p, c int) {
-	if cost[port] == nil {
-		cost[port] = make(map[int]int)
-	}
-	if cost[p] == nil {
-		cost[p] = make(map[int]int)
-	}
-	all[p] = true
-	near[p] = true
-	cost[port][p] = c
-	cost[p][port] = c
-}
-
-func testPort(p int) bool {
+func testListen(p int) bool {
 	ln, err := net.Listen("tcp", ":"+strconv.Itoa(p))
 	if err != nil {
 		return false
 	}
 	ln.Close()
+	return true
+}
+
+func testConnection(p int) bool {
+	conn, err := net.Dial("tcp", "0.0.0.0:"+strconv.Itoa(p))
+	if err != nil {
+		return false
+	}
+	conn.Close()
 	return true
 }

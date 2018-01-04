@@ -69,23 +69,20 @@ func handleMsg(msg string) {
 		}
 		break
 	case "D":
-		// 判断该广播信息是否已经被该主机广播过
-		did, _ := strconv.ParseInt(parts[1], 10, 64)
-		lock1.Lock()
-		if broadcasted[did] {
-			lock1.Unlock()
+		p, _ := strconv.Atoi(parts[1])
+		lock3.Lock()
+		if !all[p] {
+			lock3.Unlock()
 			break
 		}
-		broadcasted[did] = true
-		lock1.Unlock()
-		downport, _ := strconv.Atoi(parts[2])
-		delete(all, downport)
-		delete(near, downport)
-		delete(prev, downport)
-		delete(dist, downport)
-		delete(cost, downport)
+		lock3.Unlock()
+		delete(all, p)
+		delete(near, p)
+		delete(prev, p)
+		delete(dist, p)
+		delete(cost, p)
 		for _, u := range cost {
-			delete(u, downport)
+			delete(u, p)
 		}
 		updated = true
 		// 向其他路由器继续转发
@@ -107,7 +104,7 @@ func send(p int, msg string) {
 	conn.Close()
 }
 
-func testPort(p int) bool {
+func testListen(p int) bool {
 	ln, err := net.Listen("tcp", ":"+strconv.Itoa(p))
 	if err != nil {
 		return false

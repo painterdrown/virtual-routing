@@ -9,8 +9,9 @@ import (
 var logger *log.Logger
 
 // InitLogger .
-func InitLogger(p int) {
-	logFile, err := os.Create("logs/" + strconv.Itoa(p) + ".log")
+func InitLogger(p, mode int) {
+	filename := "logs/" + strconv.Itoa(p) + "-" + strconv.Itoa(mode) + ".log"
+	logFile, err := os.Create(filename)
 	CheckErr(err)
 	logger = log.New(logFile, "["+strconv.Itoa(p)+"]", log.LstdFlags)
 }

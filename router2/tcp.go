@@ -57,10 +57,6 @@ func handleMsg(msg string) {
 		break
 	case "A":
 		res, _ := strconv.Atoi(parts[1])
-		if res == -1 {
-			util.Prompt("错误: 找不到下一跳路由器")
-			break
-		}
 		next <- res
 		break
 	case "R":
@@ -109,7 +105,7 @@ func send(p int, msg string) {
 	conn.Close()
 }
 
-func testPort(p int) bool {
+func testListen(p int) bool {
 	ln, err := net.Listen("tcp", ":"+strconv.Itoa(p))
 	if err != nil {
 		return false
