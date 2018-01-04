@@ -24,10 +24,10 @@ func WaitShortly() {
 
 // Prompt .
 func Prompt(format string, a ...interface{}) {
-	fmt.Printf(format+"\n", a...)
 	if global.WatingForCmd {
-		fmt.Printf("> ")
+		fmt.Printf("\n")
 	}
+	fmt.Printf(format+"\n> ", a...)
 }
 
 // HandleErr .

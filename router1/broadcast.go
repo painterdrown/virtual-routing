@@ -8,7 +8,7 @@ import (
 )
 
 func broadcastPeriodically() {
-	const interval = 5 * time.Second
+	const interval = 11 * time.Second
 	ticker := time.NewTicker(interval)
 	for _ = range ticker.C {
 		if ready {

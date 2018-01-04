@@ -6,23 +6,22 @@ import (
 )
 
 func reportNeighborsPeriodically() {
-	const interval = 5 * time.Second
+	const interval = 11 * time.Second
 	ticker := time.NewTicker(interval)
 	for _ = range ticker.C {
 		if ready {
 			reportNeighbors()
-			updated = false
 		}
 	}
 }
 
 func reportNeighbors() {
-	if len(near) == 0 {
+	if len(snear) == 0 {
 		return
 	}
 	msg := "N|" + strconv.Itoa(port)
-	for n := range near {
-		msg += "|" + strconv.Itoa(n) + " " + strconv.Itoa(cost[port][n])
+	for n := range snear {
+		msg += "|" + strconv.Itoa(n) + " " + strconv.Itoa(scost[n])
 	}
 	send(controller, msg)
 }

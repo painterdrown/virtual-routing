@@ -52,8 +52,8 @@ func handleMsg(msg string) {
 		u, _ := strconv.Atoi(parts[1])
 		v, _ := strconv.Atoi(parts[2])
 		next := answer(u, v)
-		msg := "A|" + strconv.Itoa(next)
-		send(u, msg)
+		ans := "A|" + strconv.Itoa(next)
+		send(u, ans)
 		break
 	case "A":
 		res, _ := strconv.Atoi(parts[1])
@@ -69,7 +69,8 @@ func handleMsg(msg string) {
 			break
 		}
 		query(port, dest)
-		send(<-next, msg)
+		n := <-next
+		send(n, msg)
 		break
 	case "D":
 		p, _ := strconv.Atoi(parts[1])
@@ -100,11 +101,12 @@ func handleMsg(msg string) {
 func send(p int, msg string) {
 	conn, err := net.Dial("tcp", "0.0.0.0:"+strconv.Itoa(p))
 	if err != nil {
-		panic(err)
+		util.Log("错误: %s", err.Error())
+		return
 	}
 	fmt.Fprintf(conn, msg)
-	conn.Close()
 	util.Log("发送: %d %s", p, msg)
+	conn.Close()
 }
 
 func testPort(p int) bool {

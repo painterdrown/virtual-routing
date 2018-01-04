@@ -64,6 +64,7 @@ func handleMsg(msg string) {
 	case "R":
 		dest, _ := strconv.Atoi(parts[2])
 		if dest != port {
+			util.Prompt("接收: %s", msg)
 			forward(dest, msg)
 		}
 		break
@@ -97,12 +98,13 @@ func handleMsg(msg string) {
 
 func send(p int, msg string) {
 	conn, err := net.Dial("tcp", "0.0.0.0:"+strconv.Itoa(p))
-	defer conn.Close()
 	if err != nil {
+		util.Log("错误: %s", err.Error())
 		return
 	}
 	fmt.Fprintf(conn, msg)
 	util.Log("发送: %d %s", p, msg)
+	conn.Close()
 }
 
 func testPort(p int) bool {

@@ -9,7 +9,7 @@ import (
 )
 
 func updateRoutingTablePeriodically() {
-	const interval = 10 * time.Second
+	const interval = 22 * time.Second
 	ticker := time.NewTicker(interval)
 	for _ = range ticker.C {
 		if ready && updated {

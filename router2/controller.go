@@ -23,7 +23,7 @@ func answer(u, v int) int {
 }
 
 func updateRoutingTablePeriodically() {
-	const interval = 10 * time.Second
+	const interval = 22 * time.Second
 	ticker := time.NewTicker(interval)
 	for _ = range ticker.C {
 		if ready && updated {
@@ -93,11 +93,15 @@ func updateCost(source int, costs []string) {
 		parts := strings.Split(v, " ")
 		dest, _ := strconv.Atoi(parts[0])
 		c, _ := strconv.Atoi(parts[1])
-		all[dest] = true
-		near[source][dest] = true
+		if near[dest] == nil {
+			near[dest] = make(map[int]bool)
+		}
 		if cost[dest] == nil {
 			cost[dest] = make(map[int]int)
 		}
+		all[dest] = true
+		near[source][dest] = true
+		near[dest][source] = true
 		if cost[source][dest] != c {
 			cost[source][dest] = c
 			cost[dest][source] = c

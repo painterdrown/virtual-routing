@@ -81,12 +81,17 @@ func handleCmd(args []string) {
 			util.Prompt("错误: 发送的目标不能是自己")
 			break
 		}
+		qry := "Q|" + strconv.Itoa(port) + "|" + strconv.Itoa(p)
+		send(controller, qry)
 		msg := "R|" + strconv.Itoa(port) + "|" + args[1] + "|" + args[2]
-		send(<-next, msg)
+		n := <-next // 等待请求结果
+		send(n, msg)
 		break
 	case "exit":
-		msg := "D|" + strconv.Itoa(port)
-		send(controller, msg)
+		if port != controller {
+			msg := "D|" + strconv.Itoa(port)
+			send(controller, msg)
+		}
 		os.Exit(0)
 	default:
 		util.Prompt("错误: 无效的命令")

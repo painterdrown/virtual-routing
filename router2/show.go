@@ -46,6 +46,31 @@ func showPrev() {
 	}
 }
 
+func showNear() {
+	fmt.Printf("=========== near ===========\n")
+	for k1, v1 := range near {
+		fmt.Printf("[%d]: ", k1)
+		for v2 := range v1 {
+			fmt.Printf("%d ", v2)
+		}
+		fmt.Printf("\n")
+	}
+	if len(near) == 0 {
+		fmt.Printf("(null)\n")
+	}
+}
+
+func showAll() {
+	fmt.Printf("=========== all ===========\n")
+	for u := range all {
+		fmt.Printf("%d ", u)
+	}
+	if len(all) == 0 {
+		fmt.Printf("(null)")
+	}
+	fmt.Printf("\n")
+}
+
 func showInfo() {
 	showDist()
 	showPrev()
