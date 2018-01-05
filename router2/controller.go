@@ -80,6 +80,7 @@ func updateRoutingTable() {
 
 func updateCost(source int, costs []string) {
 	all[source] = true
+	down[source] = false
 	if near[source] == nil {
 		near[source] = make(map[int]bool)
 	}
@@ -90,6 +91,13 @@ func updateCost(source int, costs []string) {
 		parts := strings.Split(v, " ")
 		dest, _ := strconv.Atoi(parts[0])
 		c, _ := strconv.Atoi(parts[1])
+		if _, ok := down[dest]; ok {
+			if down[dest] {
+				continue
+			}
+		} else {
+			down[dest] = false
+		}
 		if near[dest] == nil {
 			near[dest] = make(map[int]bool)
 		}

@@ -3,6 +3,7 @@ package router3
 import (
 	"fmt"
 	"net"
+	"os"
 	"strconv"
 	"strings"
 
@@ -61,6 +62,7 @@ func handleMsg(msg string) {
 		break
 	case "D":
 		tellNeighbors(msg)
+		os.Exit(0)
 		break
 	default:
 		break
@@ -70,11 +72,12 @@ func handleMsg(msg string) {
 func send(p int, msg string) {
 	conn, err := net.Dial("tcp", "0.0.0.0:"+strconv.Itoa(p))
 	if err != nil {
-		panic(err)
+		util.Log("错误: %s", err.Error())
+		return
 	}
 	fmt.Fprintf(conn, msg)
-	conn.Close()
 	util.Log("发送: %d %s", p, msg)
+	conn.Close()
 }
 
 func testListen(p int) bool {

@@ -16,6 +16,7 @@ var lock = new(sync.Mutex)
 
 // controller
 var all = make(map[int]bool)
+var down = make(map[int]bool)
 var near = make(map[int]map[int]bool)
 var dist = make(map[int]map[int]int)
 var prev = make(map[int]map[int]int)

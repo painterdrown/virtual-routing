@@ -81,10 +81,6 @@ func handleCmd(args []string) {
 			util.Prompt("错误: 发送目标不能是自己")
 			break
 		}
-		if !all[p] {
-			util.Prompt("错误: 发送目标不存在于当前网络中")
-			break
-		}
 		qry := "Q|" + strconv.Itoa(port) + "|" + strconv.Itoa(p)
 		send(controller, qry)
 		msg := "R|" + strconv.Itoa(port) + "|" + args[1] + "|" + args[2]
@@ -92,8 +88,12 @@ func handleCmd(args []string) {
 		send(n, msg)
 		break
 	case "exit":
-		if port != controller {
-			msg := "D|" + strconv.Itoa(port)
+		msg := "D|" + strconv.Itoa(port)
+		if port == controller {
+			for u := range all {
+				send(u, msg)
+			}
+		} else {
 			send(controller, msg)
 		}
 		os.Exit(0)

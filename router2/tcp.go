@@ -3,6 +3,7 @@ package router2
 import (
 	"fmt"
 	"net"
+	"os"
 	"strconv"
 	"strings"
 
@@ -70,23 +71,21 @@ func handleMsg(msg string) {
 		break
 	case "D":
 		p, _ := strconv.Atoi(parts[1])
+		if p == controller {
+			os.Exit(0)
+		}
+		down[p] = true
 		delete(all, p)
 		delete(near, p)
 		for _, u := range near {
-			delete(u, p)
-		}
-		delete(dist, p)
-		for _, u := range dist {
-			delete(u, p)
-		}
-		delete(prev, p)
-		for _, u := range prev {
 			delete(u, p)
 		}
 		delete(cost, p)
 		for _, u := range cost {
 			delete(u, p)
 		}
+		dist = make(map[int]map[int]int)
+		prev = make(map[int]map[int]int)
 		updated = true
 		break
 	default:
