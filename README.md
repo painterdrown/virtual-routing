@@ -5,7 +5,8 @@
 ## 一、项目简介
 
 > 开发语言：Go 1.9.2<br/>
-> 开发环境：macOS High Sierra 10.13.2
+> 开发环境：macOS High Sierra 10.13.2<br/>
+> Github 地址：[https://github.com/painterdrown/virtual-routing](https://github.com/painterdrown/virtual-routing)
 
 本程序实现了基于 Go 语言的虚拟路由：
   + 可以在同一电脑上跑多个程序，通过设定不同的端口来模拟路由过程
@@ -15,10 +16,10 @@
   + 虚拟路由器的基本配置（ip 和 port）
   + 动态设计虚拟路由器之间的拓扑结构，相比于实物连线更为灵活
 
-  通过下面三个模式，对应三个算法来实现路由选择：
-    + 分布式的 LS 算法
-    + 集中式的 LS 算法
-    + 分布式的 DV 算法
+通过下面三个模式，对应三个算法来实现路由选择：
+  + 分布式的 LS 算法
+  + 集中式的 LS 算法
+  + 分布式的 DV 算法
 
 ## 二、使用方法
 
